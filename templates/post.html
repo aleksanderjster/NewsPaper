@@ -1,0 +1,21 @@
+<!-- В контенте на странице мы выводим новость с конкретным id -->
+{% extends 'flatpages/default.html' %}
+
+{% block title %}
+Post
+{% endblock title %}
+
+
+
+{% block content %}
+
+<h1>{{ post.title }}</h1>
+<div class="card">
+    <div class="card-body">
+            {{ post.content }}     
+        <hr>
+            {{ post.publication_date|date:'d.M.Y' }}
+    </div>        
+</div>  
+
+{% endblock content %}

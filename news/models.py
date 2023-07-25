@@ -140,6 +140,9 @@ class Post(models.Model):
         str = self.content[:100] + '...'
         return str
     
+    def author_name(self):
+        return str(self.user.username)
+    
 
 
 # model for releasing ManyToMany relation between

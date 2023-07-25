@@ -1,0 +1,28 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %} 
+ 
+{% block title %}
+News
+{% endblock title %}
+ 
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+<h1>Все новости</h1>
+{% for post in news %}
+<div class="card">
+    <div class="card-body">
+        <h6>
+            {{ post.title }}
+        </h6> 
+        <p> 
+            {{ post.publication_date|date:'d.M.Y' }}
+        </p>       
+        <p>
+            
+            {{ post.preview|truncatechars:20 }} <a href="{% url 'post_detail' post.id %}" class="card-link">more</a>
+
+        </p>
+    </div>        
+</div>            
+{% endfor %}
+{% endblock content %}

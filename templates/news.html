@@ -1,26 +1,32 @@
 <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %} 
- 
+
+<!--  подгружает собственные фильтры для шаблонов -->
+{% load custom_filters %}
+
 {% block title %}
 News
 {% endblock title %}
  
-<!-- В контенте на странице мы выводим все товары -->
+<!-- В контенте на странице мы выводим все новости -->
 {% block content %}
 <h1>Все новости</h1>
 {% for post in news %}
 <div class="card">
     <div class="card-body">
         <h6>
-            {{ post.title }}
+            {{ post.title|censor }}
         </h6> 
         <p> 
             {{ post.publication_date|date:'d.M.Y' }}
         </p>       
         <p>
-            
-            {{ post.preview|truncatechars:20 }} <a href="{% url 'post_detail' post.id %}" class="card-link">more</a>
-
+            {% with post_preview=post.preview|censor %}
+                {{ post_preview|truncatechars:20 }} 
+                <a href="{% url 'post_detail' post.id %}" class="card-link">
+                    more
+                </a>
+            {% endwith %}
         </p>
     </div>        
 </div>            

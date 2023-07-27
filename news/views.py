@@ -1,9 +1,10 @@
-from typing import Any, Dict
+
 from django.db.models.query import QuerySet
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponseRedirect
 from django.views.generic import ListView, DetailView
 from .models import Post
 from .filters import PostFilter
+from .forms import PostForm
 
 # Create your views here.
 class NewsList(ListView):
@@ -32,8 +33,12 @@ class PostDetail(DetailView):
 
 
 
-# def posts(request, pk=None):
-#     post = Post.objects.filter(pk=pk).first()
-#     #print(pk, post.title)
-#     return render(request, 'post.html', 
-#                   {'post': post})
+def create_post(request):
+    form = PostForm()
+    if request.method == 'POST':
+        form = PostForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/news/')
+
+    return render(request, 'post_edit.html', {'form': form})

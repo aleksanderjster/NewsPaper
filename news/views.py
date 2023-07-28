@@ -1,7 +1,8 @@
 
 from django.db.models.query import QuerySet
 from django.shortcuts import render, HttpResponseRedirect
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
 from .models import Post
 from .filters import PostFilter
 from .forms import PostForm
@@ -33,12 +34,30 @@ class PostDetail(DetailView):
 
 
 
-def create_post(request):
-    form = PostForm()
-    if request.method == 'POST':
-        form = PostForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/news/')
+# def create_post(request):
+#     form = PostForm()
+#     if request.method == 'POST':
+#         form = PostForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect('/news/')
+#     return render(request, 'post_edit.html', {'form': form})
 
-    return render(request, 'post_edit.html', {'form': form})
+
+class PostCreate(CreateView):
+    form_class = PostForm
+    model = Post
+    template_name="post_edit.html"
+
+
+class PostUpdate(UpdateView):
+    form_class = PostForm
+    model = Post
+    template_name="post_edit.html"
+
+class PostDelete(DeleteView):
+    model=Post
+    template_name="post_delete.html"
+    success_url = reverse_lazy("news_list") # REMEMBER name to be given for path in urls.py
+    
+

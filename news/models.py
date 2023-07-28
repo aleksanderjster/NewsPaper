@@ -2,6 +2,7 @@ from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.db.models import Max, Sum
+from django.urls import reverse
 
 # Create your models here.
 # variables for categories
@@ -142,6 +143,11 @@ class Post(models.Model):
     
     def author_name(self):
         return str(self.user.username)
+    
+    def get_absolute_url(self):
+        return reverse("post_detail", kwargs={"pk": self.pk})
+    
+    
     
 
 

@@ -11,13 +11,38 @@
 <!--  карточка новости -->
 {% block content %}
 
-<h1>{{ post.title|censor }}</h1>
+<div>
+    <h1>{{ post.title|censor }}</h1> by {{ post.author.user.username }}
+</div>
 <div class="card">
     <div class="card-body">
             {{ post.content|censor }}     
         <hr>
             {{ post.publication_date|date:'d.M.Y' }}
+    </div>
+    <div>
+        <a href="{{request.META.HTTP_REFERER|escape}}" class="card-link">
+            Back
+        </a>
+        {% if page_title == 'Article' %}           
+        <a href="{% url 'article_update'  post.id %}" class="card-link">
+            Edit
+        </a>
+        <a href="{% url 'article_delete'  post.id %}" class="card-link">
+            Delete
+        </a>
+        {% endif %}
+
+        {% if page_title == 'News' %}
+        <a href="{% url 'news_update'  post.id %}" class="card-link">
+            Edit
+        </a>
+        <a href="{% url 'news_delete'  post.id %}" class="card-link">
+            Delete
+        </a>
+        {% endif %}
     </div>        
-</div>  
+</div>
+  
 
 {% endblock content %}

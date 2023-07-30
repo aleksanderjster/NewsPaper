@@ -1,11 +1,18 @@
 from django import forms
 from django.core.exceptions import ValidationError
-
-from .models import Post
+from . import models
+from news.models import Post, Author
 
 class PostForm(forms.ModelForm):
     title = forms.CharField(max_length=50)  # This do the same as in commented title validation below.
-
+    author = forms.ModelChoiceField(
+        queryset = Author.objects.all(),
+    )
+    # author = forms.ModelMultipleChoiceField(
+    #     queryset=models.Author.objects.all().values("user__username"),
+    #     select= 
+    #     widget=forms.Select
+    # )
     class Meta:
         model = Post
         fields = [
@@ -15,6 +22,8 @@ class PostForm(forms.ModelForm):
             'content',
             'category',
         ]
+
+    
 
     def clean(self):
         cleaned_data = super().clean()

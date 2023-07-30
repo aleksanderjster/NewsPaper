@@ -61,6 +61,13 @@ class ArticleCreate(CreateView):
         post = form.save(commit=False)
         post.type = "A"
         return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['filterset'] = self.filterset
+        context['page_title'] = 'Article'
+        context['page_caption'] = 'Создать статью'
+        return context
 
 
 class ArticleUpdate(UpdateView):
@@ -68,9 +75,23 @@ class ArticleUpdate(UpdateView):
     model = Post
     template_name="post_edit.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['filterset'] = self.filterset
+        context['page_title'] = 'Article'
+        context['page_caption'] = 'Редактировать статью'
+        return context
+
 class ArticleDelete(DeleteView):
     model=Post
     template_name="post_delete.html"
     success_url = reverse_lazy("article_list") # REMEMBER name to be given for path in urls.py
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['filterset'] = self.filterset
+        context['page_title'] = 'Article'
+        context['page_caption'] = 'Удаление статьи'
+        return context
     
 

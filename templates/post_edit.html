@@ -1,7 +1,11 @@
 {% extends 'flatpages/default.html' %}
 
+{% block title %}
+    {{ page_title }}    
+{% endblock title %}
+
 {% block content %}
-<h3>Post</h3>
+<h3>{{ page_caption }}</h3>
 <hr>
 <form action="" method="post">
     {% csrf_token %}

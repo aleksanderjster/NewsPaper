@@ -145,11 +145,12 @@ class Post(models.Model):
         return str(self.user.username)
     
     def get_absolute_url(self):
-        return reverse("post_detail", kwargs={"pk": self.pk})
+        if self.type == "N":
+            return reverse("news_detail", kwargs={"pk": self.pk}) # redirect to news/<int:pk>
+        
+        if self.type == "A":
+            return reverse("article_detail", kwargs={"pk": self.pk}) # redirect to articles/<int:pk>
     
-    
-    
-
 
 # model for releasing ManyToMany relation between
 # Post and Category models/tables

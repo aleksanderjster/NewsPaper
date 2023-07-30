@@ -6,36 +6,47 @@
 {% load custom_tags %}
 
 {% block title %}
-News
+    {{ page_title }}    
 {% endblock title %}
  
 <!-- В контенте на странице мы выводим все новости -->
 {% block content %}
-<h1>Все новости</h1>
+<h1>
+    {{ page_caption }}
+</h1>
 
-{# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
+
+<!-- {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
 <form action="" method="get">
     {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
     {{ filterset.form.as_p }}
     {# Добавим кнопку отправки данных формы #}
     <input type="submit" value="Найти" />
-</form>
+</form> -->
 
 {% for post in page_obj %}
 <div class="card">
     <div class="card-body">
-        <h6>
+        <p></p><h6>
             {{ post.title|censor }}
-        </h6> 
+        </h6><span>posted by {{ post.author.user.username }}</span>            
+        </p>
         <p> 
             {{ post.publication_date|date:'d.M.Y' }}
         </p>       
         <p>
             {% with post_preview=post.preview|censor %}
                 {{ post_preview|truncatechars:20 }} 
-                <a href="{% url 'post_detail' post.id %}" class="card-link">
-                    more
-                </a>
+                {% if page_title == 'News' %}
+                    <a href="{% url 'news_detail' post.id %}" class="card-link">
+                        more
+                    </a>
+                {% endif %}
+                {% if page_title == 'Articles' %}
+                    <a href="{% url 'article_detail' post.id %}" class="card-link">
+                        more
+                    </a>
+                {% endif %}
             {% endwith %}
         </p>
     </div>        

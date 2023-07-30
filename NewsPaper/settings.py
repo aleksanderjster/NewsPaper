@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     # connect to news portal
     'news',
-    'django_filters'
+    'articles',
+    'django_filters',
 ]
 
 SITE_ID = 1

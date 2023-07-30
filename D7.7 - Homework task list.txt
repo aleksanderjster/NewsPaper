@@ -1,0 +1,41 @@
+- Add pagination on news/ page. It should be up to 10 publications on the page
+
+- Add news/search/ page with follow search criterias:
+	- Title
+	- Author's name
+	- publication_date (match or gt)
+  (search to be available by several search values)
+
+- Add pages for creation and editing publications with follow addreses:
+	- news/create/
+	- news/<int:pk>/edit/
+	- news/<int:pk>/delete/
+	- articles/create/
+	- articles/<int:pk>/edit/
+	- articles/<int:pk>/delete/
+
+- Add filter fields for viewing news and articles separately.
+
+============================
+Some tips:
+
+В этом нам помогут методы form_valid у CreateView и save у ModelForm.
+Метод save имеет единственный аргумент commit, который позволит нам получить инстанс модели без сохранения в базу.
+Скомбинировав их, мы можем получить следующее решение: переопределяем form_valid в нашем дженерике, получаем инстанс модели без сохранения в базе, устанавливаем нужное значение поля с типом поста, сохраняем данные (вызвав form_valid у родительского класса).
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['name', 'description', 'category', 'price']
+
+В представлении, которое наследует CreateView, переопределяем метод form_valid и устанавливаем поле модели quantity равным 13. Далее super().form_valid(form) запустит стандартный механизм сохранения, который вызовет form.save(commit=True).
+
+class ProductCreate(CreateView):
+    form_class = ProductForm
+    model = Product
+    template_name = 'product_edit.html'
+
+    def form_valid(self, form):
+        product = form.save(commit=False)
+        product.quantity = 13
+        return super().form_valid(form)

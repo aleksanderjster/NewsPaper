@@ -41,6 +41,14 @@ class Category(models.Model):
     category = models.CharField(max_length=4,
                                 choices=CATEGORIES,
                                 unique=True)
+    
+    def __str__(self):
+        category_abbreviation = self.category
+        for abbreviation, full_name in CATEGORIES:
+            if abbreviation == category_abbreviation:
+                # print(full_name)
+                return full_name
+        return self.category
 
 
 # model for Authors as extension of User model
@@ -54,6 +62,9 @@ class Author(models.Model):
     @property
     def user_id(self):
         return self.user.id
+    
+    def __str__(self):
+        return self.user.username
     
     def get_articles(self):
         try:

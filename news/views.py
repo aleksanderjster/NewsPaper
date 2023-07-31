@@ -8,7 +8,7 @@ from .models import Post
 from .forms import PostForm
 
 # Create your views here.
-class NewsList(ListView):
+class PostList(ListView):
     model = Post
     queryset = Post.objects.filter(type='N')
     ordering = 'publication_date'
@@ -30,7 +30,7 @@ class NewsList(ListView):
 
 
 
-class NewsDetail(DetailView):
+class PostDetail(DetailView):
     model = Post
     template_name = 'post.html'
     context_object_name = 'post'
@@ -52,7 +52,7 @@ class NewsDetail(DetailView):
 #     return render(request, 'post_edit.html', {'form': form})
 
 
-class NewsCreate(CreateView):
+class PostCreate(CreateView):
     form_class = PostForm
     model = Post
     template_name="post_edit.html"
@@ -70,7 +70,7 @@ class NewsCreate(CreateView):
         return context
 
 
-class NewsUpdate(UpdateView):
+class PostUpdate(UpdateView):
     form_class = PostForm
     model = Post
     template_name="post_edit.html"
@@ -82,7 +82,7 @@ class NewsUpdate(UpdateView):
         context['page_caption'] = 'Редактировать новость'
         return context
 
-class NewsDelete(DeleteView):
+class PostDelete(DeleteView):
     model=Post
     template_name="post_delete.html"
     success_url = reverse_lazy("news_list") # REMEMBER name to be given for path in urls.py

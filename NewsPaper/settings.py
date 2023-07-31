@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     # connect to news portal
     'news',
-    'articles',
+    # 'articles',
     'django_filters',
 ]
 

@@ -21,24 +21,27 @@
             {{ post.publication_date|date:'d.M.Y' }}
     </div>
     <div>
-        <a href="{{request.META.HTTP_REFERER|escape}}" class="card-link">
-            Back
-        </a>
-        {% if page_title == 'Article' %}           
+        {% if page_title == 'Article' %}
+        <a href="{% url 'article_list' %}" class="card-link">
+            К статьям
+        </a>          
         <a href="{% url 'article_update'  post.id %}" class="card-link">
-            Edit
+            Редактировать
         </a>
         <a href="{% url 'article_delete'  post.id %}" class="card-link">
-            Delete
+            Удалить
         </a>
         {% endif %}
 
         {% if page_title == 'News' %}
+        <a href="{% url 'news_list' %}" class="card-link">
+            К новостям
+        </a> 
         <a href="{% url 'news_update'  post.id %}" class="card-link">
-            Edit
+            Редактировать
         </a>
         <a href="{% url 'news_delete'  post.id %}" class="card-link">
-            Delete
+            Удалить
         </a>
         {% endif %}
     </div>        

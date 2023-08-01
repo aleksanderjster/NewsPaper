@@ -8,16 +8,10 @@ class PostForm(forms.ModelForm):
     author = forms.ModelChoiceField(
         queryset = Author.objects.all(),
     )
-    # author = forms.ModelMultipleChoiceField(
-    #     queryset=models.Author.objects.all().values("user__username"),
-    #     select= 
-    #     widget=forms.Select
-    # )
     class Meta:
         model = Post
         fields = [
             'author',
-            # 'type',
             'title',
             'content',
             'category',
@@ -29,11 +23,6 @@ class PostForm(forms.ModelForm):
         cleaned_data = super().clean()
         title = cleaned_data.get('title')
         content = cleaned_data.get('content')
-
-        # if title is not None and len(title) > 50:
-        #     raise ValidationError({
-        #         'title': 'Title can not be more than 50 symbols'
-        #     })
         
         if str(title).lower() == str(content).lower():
             raise ValidationError(

@@ -5,23 +5,18 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy, reverse
 from .models import Post
-# from .filters import PostFilter
+from .filters import PostFilter
 from .forms import PostForm
 from django.urls import resolve
    
 
-# Create your views here.
 class PostList(ListView):
     model = Post
-
-    # queryset = Post.objects.filter(type='N')
     queryset = Post.objects.all()
     context_object_name = 'news'
-
     ordering = ['-publication_date']
-    template_name = 'posts.html'
-    
-    paginate_by = 10
+    template_name = 'posts.html'    
+    paginate_by = 5
 
     # def get_queryset(self):
     #     queryset = super().get_queryset()
@@ -39,30 +34,6 @@ class PostList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        current_page_number = self.request.GET.get('page', 1)
-        context['from_page_number'] = int(current_page_number)
-        print(current_page_number)
-
-# def get(self, request, *args, **kwargs):
-#         # Get the current page number from the query parameters
-#         current_page_number = self.request.GET.get('page', 1)
-
-#         # Store the current_page_number in the session
-#         request.session['current_page_number'] = current_page_number
-
-#         return super().get(request, *args, **kwargs)
-
-# class YourModelDetailView(DetailView):
-#     model = YourModel
-#     template_name = 'your_detail_template.html'
-#     context_object_name = 'your_model'
-
-#     def get_success_url(self):
-#         # Retrieve the current_page_number from the session
-#         current_page_number = self.request.session.get('current_page_number', 1)
-
-#         # Redirect to the YourModelListView with the current_page_number as a query parameter
-#         return f"/list/?page={current_page_number}"
 
         if self.request.path == '/news/':
             context['page_title'] = 'News'
@@ -70,9 +41,29 @@ class PostList(ListView):
         if self.request.path == '/articles/':
             context['page_title'] = 'Articles'
             context['page_caption'] = 'Статьи'
-        
+
+        return context
+    
+
+class NewsSearch(ListView):
+    model = Post
+    queryset = Post.objects.filter(type='N')
+    context_object_name = 'news'
+    ordering = ['-publication_date']
+    template_name = 'post_search.html'    
+    paginate_by = 5
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'News'
+        context['page_caption'] = 'Искать в новостях'
+        context['filterset'] = self.filterset
         return context
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        self.filterset = PostFilter(self.request.GET, queryset)
+        return  self.filterset.qs
 
 
 class PostDetail(DetailView):
@@ -89,6 +80,11 @@ class PostDetail(DetailView):
             context['page_title'] = 'News'
         if context_name == 'article_detail':
             context['page_title'] = 'Article'
+
+        # test of request.META.HTTP_REFERER
+        # print(self.request.META.get("HTTP_REFERER", context_name))
+        
+
         return context
     
     def get_success_url(self):

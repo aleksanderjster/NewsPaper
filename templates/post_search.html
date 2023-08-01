@@ -15,7 +15,6 @@
     {{ page_caption }}
 </h1>
 
-{% comment %} {% if page_extra == 'search' %}
  {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
 <form action="" method="get">
     {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
@@ -23,15 +22,21 @@
     {# Добавим кнопку отправки данных формы #}
     <input type="submit" value="Искать" />
 </form>
-{% endif %} {% endcomment %}
 
 {% for post in page_obj %}
 <div class="card">
     <div class="card-body">
-        <p></p><h6>
+        <div class="card-text">
+        {% if post.type == "N" %}
+        <span>Новость: </span>
+        {% endif %}
+        <h6>
             {{ post.title|censor }}
-        </h6><span>posted by {{ post.author.user.username }}</span>            
-        </p>
+        </h6>
+        <span>
+            posted by {{ post.author.user.username }}
+        </span>            
+    </div>
         <p> 
             {{ post.publication_date|date:'d.M.Y' }}
         </p>       

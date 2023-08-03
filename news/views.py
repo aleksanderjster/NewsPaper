@@ -1,13 +1,10 @@
 
-from typing import Any, Optional
-from django.db.models.query import QuerySet
-from django.shortcuts import render, HttpResponseRedirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, resolve
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Post
 from .filters import PostFilter
 from .forms import PostForm
-from django.urls import resolve
    
 
 class PostList(ListView):
@@ -97,17 +94,6 @@ class PostDetail(DetailView):
         return list_view_url
 
 
-
-# def create_post(request):
-#     form = PostForm()
-#     if request.method == 'POST':
-#         form = PostForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect('/news/')
-#     return render(request, 'post_edit.html', {'form': form})
-
-
 class PostCreate(CreateView):
     form_class = PostForm
     model = Post
@@ -140,7 +126,9 @@ class PostCreate(CreateView):
         return context
 
 
-class PostUpdate(UpdateView):
+class PostUpdate(LoginRequiredMixin, UpdateView):
+    # login_url = "/my_login/"
+    redirect_field_name = "next"
     form_class = PostForm
     model = Post
     template_name="post_edit.html"

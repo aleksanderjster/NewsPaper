@@ -1,10 +1,18 @@
 
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse, resolve
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+
+from django.shortcuts import redirect
+from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
+
 from .models import Post
 from .filters import PostFilter
 from .forms import PostForm
+
+
+
    
 
 class PostList(ListView):
@@ -32,6 +40,16 @@ class PostList(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        # there is check for user is not in authors group.
+        context["is_not_common"] = not self.request.user.groups.filter(name='common').exists()
+        context["is_not_author"] = not self.request.user.groups.filter(name='authors').exists()
+
+        if context["is_not_common"]:
+            context["username"] = 'reader'
+        else:
+            context["username"] = self.request.user.username
+
+
         if self.request.path == '/news/':
             context['page_title'] = 'News'
             context['page_caption'] = 'Новости'
@@ -42,7 +60,8 @@ class PostList(ListView):
         return context
     
 
-class NewsSearch(ListView):
+class NewsSearch(PermissionRequiredMixin, ListView):
+    permission_required = ("news.view_post",)
     model = Post
     queryset = Post.objects.filter(type='N')
     context_object_name = 'news'
@@ -55,6 +74,16 @@ class NewsSearch(ListView):
         context['page_title'] = 'News'
         context['page_caption'] = 'Искать в новостях'
         context['filterset'] = self.filterset
+
+        # there is check for user is not in authors group.
+        context["is_not_common"] = not self.request.user.groups.filter(name='common').exists()
+        context["is_not_author"] = not self.request.user.groups.filter(name='authors').exists()
+
+        if context["is_not_common"]:
+            context["username"] = 'reader'
+        else:
+            context["username"] = self.request.user.username
+
         return context
 
     def get_queryset(self):
@@ -63,7 +92,7 @@ class NewsSearch(ListView):
         return  self.filterset.qs
 
 
-class PostDetail(DetailView):
+class PostDetail(LoginRequiredMixin, DetailView):
     model = Post
     template_name = 'post.html'
     context_object_name = 'post'
@@ -71,6 +100,15 @@ class PostDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context_name = resolve(self.request.path_info).url_name
+
+        # there is check for user is not in authors group.
+        context["is_not_common"] = not self.request.user.groups.filter(name='common').exists()
+        context["is_not_author"] = not self.request.user.groups.filter(name='authors').exists()
+
+        if context["is_not_common"]:
+            context["username"] = 'reader'
+        else:
+            context["username"] = self.request.user.username
 
         # from_page_number = context['from_page_number']
         if context_name == 'news_detail':
@@ -94,7 +132,8 @@ class PostDetail(DetailView):
         return list_view_url
 
 
-class PostCreate(CreateView):
+class PostCreate(PermissionRequiredMixin, CreateView):
+    permission_required = ("news.add_post",)
     form_class = PostForm
     model = Post
     template_name="post_edit.html"
@@ -126,7 +165,8 @@ class PostCreate(CreateView):
         return context
 
 
-class PostUpdate(LoginRequiredMixin, UpdateView):
+class PostUpdate(PermissionRequiredMixin, UpdateView):
+    permission_required = ("news.change_post",)
     # login_url = "/my_login/"
     redirect_field_name = "next"
     form_class = PostForm
@@ -137,6 +177,8 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context_name = resolve(self.request.path_info).url_name
 
+        
+
         if context_name == 'news_update':
             context['page_title'] = 'News'
             context['page_caption'] = 'Редактировать новость'
@@ -146,7 +188,8 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
 
         return context
 
-class PostDelete(DeleteView):
+class PostDelete(PermissionRequiredMixin, DeleteView):
+    permission_required = ("news.delete_post",)
     model=Post
     template_name="post_delete.html"
     # success_url = reverse_lazy("news_list") # REMEMBER name to be given for path in urls.py
@@ -179,4 +222,11 @@ class PostDelete(DeleteView):
         # Default fallback URL
         return super().get_success_url()
     
-
+@login_required
+def upgrade_me(request, *args, **kwargs):
+    user = request.user
+    authors_group = Group.objects.get(name='authors')
+    if not request.user.groups.filter(name='authors').exists():
+        authors_group.user_set.add(user)
+    
+    return redirect('/')

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-%*z+j079m$3((9el(1fdgqrc7v19fglqgc4x#3m7fua0%g8b-r
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -43,9 +43,37 @@ INSTALLED_APPS = [
     # connect to news portal
     'news',
     'django_filters',
+    #
+    #
+    # настройки пакета allauth
+    # 'django.contrib.sites',   # required for allauth (NB! add before migration)
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',   # регистрации через Google-аккаунт. ClientID and SecretKey on admin page.
 ]
 
 SITE_ID = 1
+
+LOGIN_URL = "accounts/login/"   # адрес для перенаправления на страницу входа в систему
+LOGIN_REDIRECT_URL = '/news/'   # адрес перенаправления после успешного входа
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+ACCOUNT_FORMS = {'signup': 'news.forms.CommonSignupForm'}
+
+AUTHENTICATION_BACKENDS = [
+    # ...
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,7 +92,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # 'DIRS': [],
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], # check if this will continue to function
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,6 +154,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
@@ -134,4 +163,5 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LOGIN_URL = "newsportal_login/"
+
+

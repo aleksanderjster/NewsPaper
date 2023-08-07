@@ -11,6 +11,10 @@
 <!--  карточка новости -->
 {% block content %}
 
+{% if is_not_author %}
+    <button> <a href={% url 'upgrade' %}> Хочу стать автором!</a> </button>
+{% endif %}
+
 <div>
     <h1>{{ post.title|censor }}</h1> by {{ post.author.user.username }}
 </div>
@@ -22,27 +26,31 @@
     </div>
     <div>
         {% if page_title == 'Article' %}
-        <a href="{% url 'article_list' %}" class="card-link">
-            К статьям
-        </a>          
-        <a href="{% url 'article_update'  post.id %}" class="card-link">
-            Редактировать
-        </a>
-        <a href="{% url 'article_delete'  post.id %}" class="card-link">
-            Удалить
-        </a>
+            <a href="{% url 'article_list' %}" class="card-link">
+                К статьям
+            </a>
+            {% if not is_not_author %}    
+                <a href="{% url 'article_update'  post.id %}" class="card-link">
+                    Редактировать
+                </a>
+                <a href="{% url 'article_delete'  post.id %}" class="card-link">
+                    Удалить
+                </a>
+            {% endif %} 
         {% endif %}
 
         {% if page_title == 'News' %}
-        <a href="{% url 'news_list' %}" class="card-link">
-            К новостям
-        </a> 
-        <a href="{% url 'news_update'  post.id %}" class="card-link">
-            Редактировать
-        </a>
-        <a href="{% url 'news_delete'  post.id %}" class="card-link">
-            Удалить
-        </a>
+            <a href="{% url 'news_list' %}" class="card-link">
+                К новостям
+            </a>
+            {% if not is_not_author %} 
+                <a href="{% url 'news_update'  post.id %}" class="card-link">
+                    Редактировать
+                </a>
+                <a href="{% url 'news_delete'  post.id %}" class="card-link">
+                    Удалить
+                </a>
+            {% endif %}     
         {% endif %}
     </div>        
 </div>

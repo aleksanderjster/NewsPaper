@@ -10,10 +10,7 @@ from django.contrib.auth.decorators import login_required
 from .models import Post
 from .filters import PostFilter
 from .forms import PostForm
-
-
-
-   
+ 
 
 class PostList(ListView):
     model = Post
@@ -22,12 +19,6 @@ class PostList(ListView):
     ordering = ['-publication_date']
     template_name = 'posts.html'    
     paginate_by = 5
-
-    # def get_queryset(self):
-    #     queryset = super().get_queryset()
-    #     self.filterset = PostFilter(self.request.GET, queryset)
-    #     return  self.filterset.qs
-
 
     def get_queryset(self):
         if self.request.path == '/news/':
@@ -39,16 +30,7 @@ class PostList(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        # there is check for user is not in authors group.
-        context["is_not_common"] = not self.request.user.groups.filter(name='common').exists()
         context["is_not_author"] = not self.request.user.groups.filter(name='authors').exists()
-
-        if context["is_not_common"]:
-            context["username"] = 'reader'
-        else:
-            context["username"] = self.request.user.username
-
 
         if self.request.path == '/news/':
             context['page_title'] = 'News'
@@ -60,8 +42,7 @@ class PostList(ListView):
         return context
     
 
-class NewsSearch(PermissionRequiredMixin, ListView):
-    permission_required = ("news.view_post",)
+class NewsSearch(ListView):
     model = Post
     queryset = Post.objects.filter(type='N')
     context_object_name = 'news'
@@ -74,15 +55,7 @@ class NewsSearch(PermissionRequiredMixin, ListView):
         context['page_title'] = 'News'
         context['page_caption'] = 'Искать в новостях'
         context['filterset'] = self.filterset
-
-        # there is check for user is not in authors group.
-        context["is_not_common"] = not self.request.user.groups.filter(name='common').exists()
         context["is_not_author"] = not self.request.user.groups.filter(name='authors').exists()
-
-        if context["is_not_common"]:
-            context["username"] = 'reader'
-        else:
-            context["username"] = self.request.user.username
 
         return context
 
@@ -92,7 +65,7 @@ class NewsSearch(PermissionRequiredMixin, ListView):
         return  self.filterset.qs
 
 
-class PostDetail(LoginRequiredMixin, DetailView):
+class PostDetail(DetailView):
     model = Post
     template_name = 'post.html'
     context_object_name = 'post'
@@ -101,14 +74,7 @@ class PostDetail(LoginRequiredMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context_name = resolve(self.request.path_info).url_name
 
-        # there is check for user is not in authors group.
-        context["is_not_common"] = not self.request.user.groups.filter(name='common').exists()
         context["is_not_author"] = not self.request.user.groups.filter(name='authors').exists()
-
-        if context["is_not_common"]:
-            context["username"] = 'reader'
-        else:
-            context["username"] = self.request.user.username
 
         # from_page_number = context['from_page_number']
         if context_name == 'news_detail':
@@ -167,7 +133,6 @@ class PostCreate(PermissionRequiredMixin, CreateView):
 
 class PostUpdate(PermissionRequiredMixin, UpdateView):
     permission_required = ("news.change_post",)
-    # login_url = "/my_login/"
     redirect_field_name = "next"
     form_class = PostForm
     model = Post
@@ -226,7 +191,9 @@ class PostDelete(PermissionRequiredMixin, DeleteView):
 def upgrade_me(request, *args, **kwargs):
     user = request.user
     authors_group = Group.objects.get(name='authors')
+    refferer = request.headers['Referer']
+    
     if not request.user.groups.filter(name='authors').exists():
         authors_group.user_set.add(user)
     
-    return redirect('/')
+    return redirect(refferer)

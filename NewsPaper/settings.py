@@ -55,8 +55,9 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-LOGIN_URL = "accounts/login/"   # адрес для перенаправления на страницу входа в систему
+LOGIN_URL = "/accounts/login/"   # адрес для перенаправления на страницу входа в систему
 LOGIN_REDIRECT_URL = '/news/'   # адрес перенаправления после успешного входа
+LOGOUT_REDIRECT_URL = '/news/'   # адрес перенаправления после успешного входа
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True

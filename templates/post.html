@@ -11,30 +11,36 @@
 <!--  карточка новости -->
 {% block content %}
 
-{% if is_not_author %}
-    <button> <a href={% url 'upgrade' %}> Хочу стать автором!</a> </button>
-{% endif %}
-
-<div>
-    <h1>{{ post.title|censor }}</h1> by {{ post.author.user.username }}
+<div class='small'>
+    {% if not request.user.is_authenticated %}
+        <div class='card-body'> Неавторизованный читатель / <a href="{% url 'account_login' %}">Войти</a></div>
+    {% elif is_not_author %}
+        <div class='card-body'> {{ request.user.username }} - читатель <button> <a href={% url 'upgrade' %}> Стать автором!</a> </button> / <a href="{% url 'account_logout' %}">SignOut</a></div>
+    {% else %}
+        <div class='card-body'> {{ request.user.username }} - автор / <a href="{% url 'account_logout' %}">Выйти</a></div>
+    {% endif %}
 </div>
+
 <div class="card">
+    <h5 class="card-title">{{ post.title|censor }}</h5>
+    <span class='small'>Автор: {{ post.author.user.username }}. Опубликована: {{ post.publication_date|date:'d.M.Y' }}</span>  
     <div class="card-body">
-            {{ post.content|censor }}     
-        <hr>
-            {{ post.publication_date|date:'d.M.Y' }}
+        <p class="card-text">
+            {{ post.content|censor }}
+        </p>     
+        <hr>                   
     </div>
-    <div>
+    
         {% if page_title == 'Article' %}
             <a href="{% url 'article_list' %}" class="card-link">
                 К статьям
             </a>
-            {% if not is_not_author %}    
+            {% if request.user.is_authenticated and not is_not_author %}    
                 <a href="{% url 'article_update'  post.id %}" class="card-link">
                     Редактировать
                 </a>
                 <a href="{% url 'article_delete'  post.id %}" class="card-link">
-                    Удалить
+                    Удалить (админ)
                 </a>
             {% endif %} 
         {% endif %}
@@ -43,16 +49,16 @@
             <a href="{% url 'news_list' %}" class="card-link">
                 К новостям
             </a>
-            {% if not is_not_author %} 
+            {% if request.user.is_authenticated and not is_not_author %}
                 <a href="{% url 'news_update'  post.id %}" class="card-link">
                     Редактировать
                 </a>
                 <a href="{% url 'news_delete'  post.id %}" class="card-link">
-                    Удалить
+                    Удалить (админ)
                 </a>
             {% endif %}     
         {% endif %}
-    </div>        
+            
 </div>
   
 

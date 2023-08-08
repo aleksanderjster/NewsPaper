@@ -11,6 +11,15 @@
  
 <!-- В контенте на странице мы выводим все новости -->
 {% block content %}
+<div class='card small'>
+    {% if not request.user.is_authenticated %}
+        <div class='card-body'> Неавторизованный читатель / <a href="{% url 'account_login' %}">Войти</a></div>
+    {% elif is_not_author %}
+        <div class='card-body'> {{ request.user.username }} - читатель <button> <a href={% url 'upgrade' %}> Стать автором!</a> </button> / <a href="{% url 'account_logout' %}">SignOut</a></div>
+    {% else %}
+        <div class='card-body'> {{ request.user.username }} - автор / <a href="{% url 'account_logout' %}">Выйти</a></div>
+    {% endif %}
+</div>
 <h1>
     {{ page_caption }}
 </h1>

@@ -1,7 +1,5 @@
-<div class="text-sm-start">
-    <small class='card-subtitle text-secondary'>
-        опубликовано:<br> <span class='fw-bold'> {{ post.author.user.username }}</span> от
-         
-            {{ post.publication_date|date:'d.M.Y' }}
-    </small>
+<div class="small text-start fw-light">
+        опубликовано:<br> 
+            <span class='fw-normal'>{{ post.author.user.username }}</span> от 
+            <span class='fw-normal'>{{ post.publication_date|date:'d.M.Y' }}</span>
 </div> 

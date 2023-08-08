@@ -1,18 +1,15 @@
-<div class='small text-end'>
+<div class="small text-end">
+
     {% if not request.user.is_authenticated %}
-        <div class='card-body'> <span class='fw-bold'>Неавторизованный</span> (статус: читатель) <br> 
-            <a class='btn btn-sm btn-outline-primary' href="{% url 'account_login' %}">
-                Войти
-            </a>
-        </div>
-    {% elif is_not_author %}
-        <div class='card-body'> <span class='fw-bold'>{{ request.user.username }}</span> (статус: читатель)<br>
-            <a class='btn btn-sm btn-outline-primary' href={% url 'upgrade' %}> Стать автором!</a><span/>
+        <span class='fw-semibold'>Неавторизованный</span> (статус: читатель) <br> 
+        <a class='btn btn-sm btn-outline-primary' href="{% url 'account_login' %}">Войти</a>
+    {% elif is_not_author %} 
+        <span class='fw-semibold'>{{ request.user.username }}</span> (статус: читатель)<br>
+            <a class='btn btn-sm btn-outline-primary' href={% url 'upgrade' %}> Стать автором!</a>
             <a class='btn btn-sm btn-outline-primary' href="{% url 'account_logout' %}">Выйти</a>
-        </div>
     {% else %}
-        <div class='card-body'> {{ request.user.username }} (статус: автор)<br>
+        <span class='fw-semibold'>{{ request.user.username }}</span> (статус: автор)<br>
             <a class='btn btn-sm btn-outline-primary' href="{% url 'account_logout' %}">Выйти</a>
-        </div>
     {% endif %}
+
 </div>

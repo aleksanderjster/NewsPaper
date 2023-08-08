@@ -11,19 +11,12 @@
 <!--  карточка новости -->
 {% block content %}
 
-<div class='small'>
-    {% if not request.user.is_authenticated %}
-        <div class='card-body'> Неавторизованный читатель / <a href="{% url 'account_login' %}">Войти</a></div>
-    {% elif is_not_author %}
-        <div class='card-body'> {{ request.user.username }} - читатель <button> <a href={% url 'upgrade' %}> Стать автором!</a> </button> / <a href="{% url 'account_logout' %}">SignOut</a></div>
-    {% else %}
-        <div class='card-body'> {{ request.user.username }} - автор / <a href="{% url 'account_logout' %}">Выйти</a></div>
-    {% endif %}
-</div>
+{% include 'snippet_user_info.html' %}
 
 <div class="card">
+    {% include 'snippet_publication_info.html' %}
     <h5 class="card-title">{{ post.title|censor }}</h5>
-    <span class='small'>Автор: {{ post.author.user.username }}. Опубликована: {{ post.publication_date|date:'d.M.Y' }}</span>  
+    {% comment %} <span class='small'>Автор: {{ post.author.user.username }}. Опубликована: {{ post.publication_date|date:'d.M.Y' }}</span>   {% endcomment %}
     <div class="card-body">
         <p class="card-text">
             {{ post.content|censor }}

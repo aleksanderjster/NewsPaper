@@ -3,7 +3,7 @@
 
 <!--  подгружает собственные фильтры для шаблонов -->
 {% load custom_filters %}
-{% load custom_tags %}
+{% comment %} {% load custom_tags %} {% endcomment %}
 
 {% block title %}
     {{ page_title }}    
@@ -12,42 +12,21 @@
 <!-- В контенте на странице мы выводим все новости -->
 {% block content %}
 
-<div class='card small'>
-    {% if not request.user.is_authenticated %}
-        <div class='card-body'> Неавторизованный читатель / <a href="{% url 'account_login' %}">Войти</a></div>
-    {% elif is_not_author %}
-        <div class='card-body'> {{ request.user.username }} - читатель <button> <a href={% url 'upgrade' %}> Стать автором!</a> </button> / <a href="{% url 'account_logout' %}">SignOut</a></div>
-    {% else %}
-        <div class='card-body'> {{ request.user.username }} - автор / <a href="{% url 'account_logout' %}">Выйти</a></div>
-    {% endif %}
-</div>
+{% include 'snippet_user_info.html' %}
 
 <h1>
     {{ page_caption }}
 </h1>
 
-{% comment %} {% if page_extra == 'search' %}
- {# Добавляем форму, которая объединяет набор полей, которые будут отправляться в запросе #}
-<form action="" method="get">
-    {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
-    {{ filterset.form.as_p }}
-    {# Добавим кнопку отправки данных формы #}
-    <input type="submit" value="Искать" />
-</form>
-{% endif %} {% endcomment %}
-
 {% for post in page_obj %}
 <div class="card">
     <div class="card-body">
+
+        {% include 'snippet_publication_info.html' %}
+
         <h5 class="card-title">
             {{ post.title|censor }}
-        </h5>
-        <span class="text-muted small">
-            posted by {{ post.author.user.username }}
-            <p> 
-                {{ post.publication_date|date:'d.M.Y' }}
-            </p>
-        </span>            
+        </h5>                 
                
         <p class="card-text">
             {% with post_preview=post.preview|censor %}
@@ -68,40 +47,6 @@
 </div>            
 {% endfor %}
 
-<!-- вывод информации о страницах -->
-<div class="pagination">
-    <span class="step-links">
+{% include 'snippet_pagination.html' %}
 
-        {% if page_obj.paginator.num_pages != 1 %}
-            <!-- вывод информации о предыдуших страницах -->
-            {% if page_obj.has_previous %}
-                <a href='?{% url_replace page=1 %}' class="card-link">1</a>
-                {% if page_obj.previous_page_number != 1 %}
-                    ...
-                    <a href='?{% url_replace page=page_obj.previous_page_number %}' class="card-link">
-                        {{page_obj.previous_page_number}}
-                    </a>
-                {% endif %}
-            {% endif %}
-
-            <!-- вывод информации о текущей странице -->
-            <span class="current">
-                {{ page_obj.number }}
-            </span>
-
-            <!-- вывод информации о следующих страницах -->
-            {% if page_obj.has_next %}
-                <a href='?{% url_replace page=page_obj.next_page_number %}' class="card-link">
-                    {{page_obj.next_page_number}}
-                </a>
-                {% if page_obj.paginator.num_pages != page_obj.next_page_number %}
-                    ...
-                    <a href='?{% url_replace page=page_obj.paginator.num_pages %}' class="card-link">
-                        {{page_obj.paginator.num_pages}}
-                    </a>
-                {% endif %}
-            {% endif %}
-        {% endif %}
-    </span>
-</div>
 {% endblock content %}

@@ -41,6 +41,7 @@ class Category(models.Model):
     category = models.CharField(max_length=4,
                                 choices=CATEGORIES,
                                 unique=True)
+    subscriber = models.ManyToManyField(User, through='CategoryUser')
     
     def __str__(self):
         category_abbreviation = self.category
@@ -49,6 +50,14 @@ class Category(models.Model):
                 # print(full_name)
                 return full_name
         return self.category
+
+
+class CategoryUser(models.Model):
+    category = models.ForeignKey(Category,
+                                 on_delete=models.CASCADE,
+                                 null=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                                 null=False)
 
 
 # model for Authors as extension of User model

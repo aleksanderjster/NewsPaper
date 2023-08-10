@@ -32,6 +32,8 @@
                 <a href="{% url 'article_update'  post.id %}" class="card-link">
                     Редактировать
                 </a>
+            {% comment %} {% endif %}
+            {% if request.user.is_staff %}  {% endcomment %}
                 <a href="{% url 'article_delete'  post.id %}" class="card-link">
                     Удалить (админ)
                 </a>
@@ -46,6 +48,8 @@
                 <a href="{% url 'news_update'  post.id %}" class="card-link">
                     Редактировать
                 </a>
+            {% comment %} {% endif %}
+            {% if request.user.is_staff %}  {% endcomment %}
                 <a href="{% url 'news_delete'  post.id %}" class="card-link">
                     Удалить (админ)
                 </a>

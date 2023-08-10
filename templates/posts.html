@@ -14,6 +14,12 @@
 
 {% include 'snippet_user_info.html' %}
 
+{% comment %} List of all categoies for filtering {% endcomment %}
+{% for category in category_list %}
+    {{ category }}<br>
+{%  endfor %}
+
+
 <h1>
     {{ page_caption }}
 </h1>

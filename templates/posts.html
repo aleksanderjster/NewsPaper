@@ -3,7 +3,7 @@
 
 <!--  подгружает собственные фильтры для шаблонов -->
 {% load custom_filters %}
-{% comment %} {% load custom_tags %} {% endcomment %}
+{% load custom_tags %}
 
 {% block title %}
     {{ page_title }}    
@@ -15,10 +15,26 @@
 {% include 'snippet_user_info.html' %}
 
 {% comment %} List of all categoies for filtering {% endcomment %}
-{% for category in category_list %}
-    {{ category }}<br>
-{%  endfor %}
 
+<!-- Example split danger button -->
+{% if page_title == 'News' %}
+    <div class="btn-group-sm text-start pb-3">
+        {% if category_id == 0 %}
+        <a class="btn btn-outline-primary active" href="{% url 'news_list' %}">Все категории</a>
+        {% else %}
+            <a class="btn btn-outline-primary" href="{% url 'news_list' %}">Все категории</a>
+        {% endif %}
+
+        {% for category in category_list %}
+            {% if category_id == category.id %}
+                <a class="btn btn-outline-primary active" aria-current="page" href="{% url 'news_list' %}?category={{ category.id }}" >{{ category }}</a>
+            {% else %}
+                <a class="btn btn-outline-primary" href="{% url 'news_list' %}?category={{ category.id }}" >{{ category }}</a>
+            {% endif %}
+        {% endfor %} 
+    </div>
+{% endif %}
+{% comment %} End List of all categoies for filtering {% endcomment %}
 
 <h1>
     {{ page_caption }}

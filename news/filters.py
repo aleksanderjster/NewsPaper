@@ -1,7 +1,6 @@
 from django_filters import FilterSet, DateFilter, CharFilter, ChoiceFilter
 from django.forms import DateInput
 from news.models import Post, Author
-
 # we create filter set for our model Post
 
 class AuthorChoiceFilter(ChoiceFilter):

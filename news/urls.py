@@ -4,7 +4,7 @@ from .views import upgrade_me
 
 urlpatterns = [
     path('news/', PostList.as_view(), name="news_list"),
-    path('news/search', NewsSearch.as_view(), name='search_list'),
+    path('news/search/', NewsSearch.as_view(), name='search_list'),
     path('news/<int:pk>/', PostDetail.as_view(), name = 'news_detail'),
     path('news/create/', PostCreate.as_view(), name='news_create'),
     path("news/<int:pk>/edit/", PostUpdate.as_view(), name='news_update'),

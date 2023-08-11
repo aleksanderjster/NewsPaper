@@ -21,8 +21,13 @@ class PostList(ListView):
     paginate_by = 5
 
     def get_queryset(self):
+        queryset = super().get_queryset()
+        cat_id = int(self.request.GET.get("category", 0))
         if self.request.path == '/news/':
-            return Post.objects.filter(type='N').order_by('-publication_date')
+            if cat_id > 0:
+                return Post.objects.filter(type='N', category__id=cat_id).order_by('-publication_date')
+            else:
+                return Post.objects.filter(type="N").order_by('-publication_date')
         
         if self.request.path == '/articles/':    
              return Post.objects.filter(type='A').order_by('-publication_date')
@@ -32,8 +37,11 @@ class PostList(ListView):
         context = super().get_context_data(**kwargs)
         context["is_not_author"] = not self.request.user.groups.filter(name='authors').exists()
         # adding categories for list of all categories
-        categories = Category.objects.all().values_list("category", flat=True)
-        context["category_list"] = categories
+        # categories = Category.objects.all().values_list("category", flat=True)
+        category_names = Category.objects.all()
+        context["category_list"] = category_names
+        cat_id = int(self.request.GET.get("category", 0))
+        context["category_id"] = cat_id
 
         if self.request.path == '/news/':
             context['page_title'] = 'News'
@@ -156,6 +164,7 @@ class PostUpdate(PermissionRequiredMixin, UpdateView):
 
         return context
 
+
 class PostDelete(PermissionRequiredMixin, DeleteView):
     permission_required = ("news.delete_post",)
     model=Post
@@ -189,7 +198,8 @@ class PostDelete(PermissionRequiredMixin, DeleteView):
 
         # Default fallback URL
         return super().get_success_url()
-    
+
+
 @login_required
 def upgrade_me(request, *args, **kwargs):
     user = request.user

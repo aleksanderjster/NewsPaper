@@ -29,14 +29,13 @@
 {% for post in page_obj %}
 <div class="card">
     <div class="card-body">
-        <div class="card-text">
 
-            {% include 'snippet_publication_info.html' %}
+        {% include 'snippet_publication_info.html' %}
 
-            <h5 class="card-title">
-                {{ post.title|censor }}
-            </h5> 
-
+        <h5 class="card-title">
+            {{ post.title|censor }}
+        </h5>                 
+               
         <p class="card-text">
             {% with post_preview=post.preview|censor %}
                 {{ post_preview|truncatechars:20 }} 
@@ -55,7 +54,7 @@
     </div>        
 </div>            
 {% endfor %}
-<br>
+
 {% include 'snippet_pagination.html' %}
 
 {% endblock content %}

@@ -19,6 +19,9 @@
 <!-- Example split danger button -->
 {% if page_title == 'News' %}
     <div class="btn-group-sm text-start pb-3">
+        {% if request.user.is_authenticated%}
+            <a class="btn btn-outline-danger" href="#"><i class="bi bi-envelope-at-fill"></i> Подписаться на:</a>
+        {% endif %}
         {% if category_id == 0 %}
         <a class="btn btn-outline-primary active" href="{% url 'news_list' %}">Все категории</a>
         {% else %}

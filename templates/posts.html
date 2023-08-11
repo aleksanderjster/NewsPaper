@@ -1,75 +1,82 @@
 <!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
-{% extends 'flatpages/default.html' %} 
+{% extends 'flatpages/default.html' %}
 
 <!--  подгружает собственные фильтры для шаблонов -->
 {% load custom_filters %}
 {% load custom_tags %}
 
 {% block title %}
-    {{ page_title }}    
+{{ page_title }}
 {% endblock title %}
- 
+
 <!-- В контенте на странице мы выводим все новости -->
 {% block content %}
 
 {% include 'snippet_user_info.html' %}
 
-{% comment %} List of all categoies for filtering {% endcomment %}
-
-<!-- Example split danger button -->
-{% if page_title == 'News' %}
-    <div class="btn-group-sm text-start pb-3">
-        {% if request.user.is_authenticated%}
-            <a class="btn btn-outline-danger" href="#"><i class="bi bi-envelope-at-fill"></i> Подписаться на:</a>
-        {% endif %}
-        {% if category_id == 0 %}
-        <a class="btn btn-outline-primary active" href="{% url 'news_list' %}">Все категории</a>
-        {% else %}
-            <a class="btn btn-outline-primary" href="{% url 'news_list' %}">Все категории</a>
-        {% endif %}
-
-        {% for category in category_list %}
-            {% if category_id == category.id %}
-                <a class="btn btn-outline-primary active" aria-current="page" href="{% url 'news_list' %}?category={{ category.id }}" >{{ category }}</a>
-            {% else %}
-                <a class="btn btn-outline-primary" href="{% url 'news_list' %}?category={{ category.id }}" >{{ category }}</a>
-            {% endif %}
-        {% endfor %} 
-    </div>
-{% endif %}
-{% comment %} End List of all categoies for filtering {% endcomment %}
-
 <h1>
     {{ page_caption }}
 </h1>
 
+<!-- List of all categoies for filtering -->
+{% if page_title == 'News' %}
+<div class="btn-group-sm text-start pb-3">
+    {% if request.user.is_authenticated%}
+    <a class="btn btn-outline-danger" href="#"><i class="bi bi-envelope-at-fill"></i> Подписаться на:</a>
+    {% endif %}
+    {% if category_id == 0 %}
+    <a class="btn btn-outline-primary active" href="{% url 'news_list' %}">Все категории</a>
+    {% else %}
+    <a class="btn btn-outline-primary" href="{% url 'news_list' %}">Все категории</a>
+    {% endif %}
+
+    {% for category in category_list %}
+    {% if category_id == category.id %}
+    <a class="btn btn-outline-primary active" aria-current="page"
+        href="{% url 'news_list' %}?category={{ category.id }}">{{ category }}</a>
+    {% else %}
+    <a class="btn btn-outline-primary" href="{% url 'news_list' %}?category={{ category.id }}">{{ category }}</a>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
+<!-- End List of all categoies for filtering -->
+
 {% for post in page_obj %}
-<div class="card">
+
+<div class="card m-1">
     <div class="card-body">
+        <div class="row row-cols-sm-1 row-cols-md-4">
+            <div class="col-md-3">
+                {% include 'snippet_publication_info.html' %}
+            </div>
+            <div class="col-md-auto text-start p-2">
+                <h5 class="card-title">
+                    {{ post.title|censor }}
+                </h5>
+                <p class="card-text">
+                    {% with post_preview=post.preview|censor %}
+                    {{ post_preview|truncatechars:20 }}
+                    {% endwith %}
+                </p>
+            </div>
+        </div>
+        <div class="row text-sm-end text-start">
+            {% if page_title == 'News' %}
+             
+             <a href="{% url 'news_detail' post.id %}"  class='stretched-link'>
+                Подробнее <i class="bi bi-arrow-right"></i>
+            </a>
+            {% endif %}
+            {% if page_title == 'Articles' %}
+            <a href="{% url 'article_detail' post.id %}" class="stretched-link">
+                Подробнее <i class="bi bi-arrow-right"></i>
+            </a>
+            {% endif %}
+        </div>
+    </div>
 
-        {% include 'snippet_publication_info.html' %}
-
-        <h5 class="card-title">
-            {{ post.title|censor }}
-        </h5>                 
-               
-        <p class="card-text">
-            {% with post_preview=post.preview|censor %}
-                {{ post_preview|truncatechars:20 }} 
-                {% if page_title == 'News' %}
-                    <a href="{% url 'news_detail' post.id %}" class="card-link">
-                        more
-                    </a>
-                {% endif %}
-                {% if page_title == 'Articles' %}
-                    <a href="{% url 'article_detail' post.id %}" class="card-link">
-                        more
-                    </a>
-                {% endif %}
-            {% endwith %}
-        </p>
-    </div>        
-</div>            
+</div>
 {% endfor %}
 
 {% include 'snippet_pagination.html' %}

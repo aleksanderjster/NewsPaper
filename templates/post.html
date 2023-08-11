@@ -2,7 +2,7 @@
 {% extends 'flatpages/default.html' %}
 
 {% block title %}
-    {{ page_title }}
+{{ page_title }}
 {% endblock title %}
 
 <!--  подгружает собственные фильтры для шаблонов -->
@@ -13,50 +13,77 @@
 
 {% include 'snippet_user_info.html' %}
 
-<div class="card">
-    {% include 'snippet_publication_info.html' %}
-    <h5 class="card-title">{{ post.title|censor }}</h5>
-    {% comment %} <span class='small'>Автор: {{ post.author.user.username }}. Опубликована: {{ post.publication_date|date:'d.M.Y' }}</span>   {% endcomment %}
-    <div class="card-body">
-        <p class="card-text">
-            {{ post.content|censor }}
-        </p>     
-        <hr>                   
-    </div>
-    
-        {% if page_title == 'Article' %}
-            <a href="{% url 'article_list' %}" class="card-link">
-                К статьям
-            </a>
-            {% if request.user.is_authenticated and not is_not_author %}    
-                <a href="{% url 'article_update'  post.id %}" class="card-link">
-                    Редактировать
-                </a>
-            {% comment %} {% endif %}
-            {% if request.user.is_staff %}  {% endcomment %}
-                <a href="{% url 'article_delete'  post.id %}" class="card-link">
-                    Удалить (админ)
-                </a>
-            {% endif %} 
-        {% endif %}
 
-        {% if page_title == 'News' %}
-            <a href="{% url 'news_list' %}" class="card-link">
-                К новостям
-            </a>
-            {% if request.user.is_authenticated and not is_not_author %}
-                <a href="{% url 'news_update'  post.id %}" class="card-link">
-                    Редактировать
-                </a>
-            {% comment %} {% endif %}
-            {% if request.user.is_staff %}  {% endcomment %}
-                <a href="{% url 'news_delete'  post.id %}" class="card-link">
-                    Удалить (админ)
-                </a>
-            {% endif %}     
-        {% endif %}
-            
+<div class="card m-1">
+    <div class="card-body">
+        <div class="row row-cols-sm-1 row-cols-md-4">
+            <div class="col-md-3">
+                {% include 'snippet_publication_info.html' %}
+            </div>
+            <div class="col-md-auto text-start p-2">
+                <h5 class="card-title">
+                    {{ post.title|censor }}
+                </h5>
+                <p class="card-text">
+                    {{ post.content|censor }}
+                </p>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                {% if page_title == 'News' %}
+                    <div class="col text-start">
+                        <a href="{% url 'news_list' %}" class='card-link'>
+                            <i class="bi bi-arrow-left"></i> К новостям
+                        </a>
+                    </div>
+
+                    {% if request.user.is_authenticated and not is_not_author %}
+                    <div class="col">
+                        <a href="{% url 'news_update'  post.id %}" class="card-link">
+                            Редактировать
+                        </a>
+                    </div>
+                    {% comment %}{% endif %}
+
+                    {% if request.user.is_staff %} {% endcomment %}
+                    <div class="col text-end">
+                        <a href="{% url 'news_delete'  post.id %}" class="card-link">
+                            Удалить (админ)
+                        </a>
+                    </div>
+                    {% endif %}
+
+                {% endif %}
+
+                {% if page_title == 'Article' %}
+                    <div class="col text-start">
+                        <a href="{% url 'article_list' %}" class='card-link'>
+                            <i class="bi bi-arrow-left"></i> К статьям
+                        </a>
+                    </div>
+
+                    {% if request.user.is_authenticated and not is_not_author %}
+                    <div class="col">
+                        <a href="{% url 'article_update'  post.id %}" class="card-link">
+                            Редактировать
+                        </a>
+                    </div>
+                    {% comment %}{% endif %}
+
+                    {% if request.user.is_staff %} {% endcomment %}
+                    <div class="col text-end">
+                        <a href="{% url 'article_delete'  post.id %}" class="card-link">
+                            Удалить (админ)
+                        </a>
+                    </div>
+                    {% endif %}
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
 </div>
-  
 
 {% endblock content %}

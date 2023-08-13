@@ -58,6 +58,9 @@ class CategoryUser(models.Model):
                                  null=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE,
                                  null=False)
+    
+    class Meta:
+        unique_together = ('user', 'category')
 
 
 # model for Authors as extension of User model

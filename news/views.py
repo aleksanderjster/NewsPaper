@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 
-from .models import Post, Category
+from .models import Post, Category, User
 from .filters import PostFilter
 from .forms import PostForm
  
@@ -36,6 +36,14 @@ class PostList(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["is_not_author"] = not self.request.user.groups.filter(name='authors').exists()
+
+
+        # # Here we try to analyze if subscribe is pressed and what category is active
+        # subscribe = self.request.GET.get("subscribe", None)
+        # if subscribe:
+        #     subscribe_user_mail = self.request.user.email
+        #     print(subscribe, subscribe_user_mail)
+
         # adding categories for list of all categories
         # categories = Category.objects.all().values_list("category", flat=True)
         category_names = Category.objects.all()
@@ -209,4 +217,34 @@ def upgrade_me(request, *args, **kwargs):
     if not request.user.groups.filter(name='authors').exists():
         authors_group.user_set.add(user)
     
+    return redirect(refferer)
+
+@login_required
+def subscribe_to_category(request, *args, **kwargs):
+    user = request.user
+    category = kwargs['category']
+    refferer = request.headers['Referer']
+    # print(f'category: {category}')
+    # print(user.username)
+    # print(f'redirect to: {refferer}')
+
+    # TODO:
+    # (1) check if user subscribed on this category
+    # if no then subscribe him/her
+    # if user selected for all then (1)
+    if category != 0:
+        is_not_subscribed = not Category.objects.filter(id=category, subscriber=user).exists()
+        if is_not_subscribed:
+            category = Category.objects.get(id=category)
+            category.subscriber.add(user)
+
+    if category == 0:
+        categories = Category.objects.filter()
+        for category in categories:
+            is_not_subscribed = not Category.objects.filter(id=category.id, subscriber=user).exists()
+            if is_not_subscribed:
+                # category = Category.objects.get(id=category)
+                category.subscriber.add(user)
+
+
     return redirect(refferer)

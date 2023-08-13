@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
 from pathlib import Path
+from .authconfig import email_host_user, email_password
+from dotenv import load_dotenv
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-%*z+j079m$3((9el(1fdgqrc7v19fglqgc4x#3m7fua0%g8b-r'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -52,6 +55,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',   # регистрации через Google-аккаунт. ClientID and SecretKey on admin page.
 ]
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_EMAIL')
 
 SITE_ID = 1
 
@@ -63,9 +67,17 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory' # 'none' if verification is not required
 
 ACCOUNT_FORMS = {'signup': 'news.forms.CommonSignupForm'}
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = os.getenv('MAIL_USER')
+EMAIL_HOST_PASSWORD = os.getenv('MAIL_PASSWORD')
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
 
 AUTHENTICATION_BACKENDS = [
     # ...

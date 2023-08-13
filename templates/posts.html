@@ -22,7 +22,40 @@
 {% if page_title == 'News' %}
 <div class="btn-group-sm text-start pb-3">
     {% if request.user.is_authenticated%}
-    <a class="btn btn-outline-danger" href="#"><i class="bi bi-envelope-at-fill"></i> Подписаться на:</a>
+    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#CategorySubscribeModal">
+        <i class="bi bi-envelope-at-fill"></i> 
+        Подписаться на:
+    </button>
+    <!-- Modal -->
+    <div class="modal fade" id="CategorySubscribeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="ModalLabel">Вы желаете подписаться</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                {% if category_id == 0 %}
+                    на <strong>все</strong> категории
+                {% else %}
+                    {% for category in category_list %}
+                        {% if category.id == category_id %}
+                            <!-- This is the specific category with the matching ID -->
+                            на категорию <strong>{{ category }}</strong>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Нет</button>
+                <a class="btn btn-primary" href="{% url 'subscribe_to_category' category_id %}">
+                    <i class="bi bi-envelope-at-fill"></i> 
+                    Подписаться
+                </a>
+                </div>
+            </div>
+        </div>
+    </div>
     {% endif %}
     {% if category_id == 0 %}
     <a class="btn btn-outline-primary active" href="{% url 'news_list' %}">Все категории</a>

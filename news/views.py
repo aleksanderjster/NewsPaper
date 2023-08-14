@@ -7,9 +7,49 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 
-from .models import Post, Category, User
+from .models import Post, Category
+from django.conf import settings
 from .filters import PostFilter
 from .forms import PostForm
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+@receiver(post_save, sender=Post)
+def new_post_notification(sender, instance, created, **kwargs):
+    post_id = instance.id
+    post = Post.objects.get(id=post_id)
+    post_type = post.type
+
+    if post_type == 'A':
+        return              # exit function if post is not news type
+    
+    category_ids = Post.objects.filter(id=post_id).values('category__id')
+    categories = post.category.all()
+
+    if not created:
+        categories = post.category.all()
+
+        for category in categories:
+            subscriber_email_list = []
+            # category = Category.objects.get(id=category_id['category__id'])
+            subscribers = category.subscriber.all()
+
+            for subscriber in subscribers:
+                subscriber_email_list.append(subscriber.email)
+            
+            send_notification(subscriber_email_list=subscriber_email_list, post=post)           
+
+
+def send_notification(subscriber_email_list, post):
+    
+    notification_subject = f'New post added in {post.category} you subscribed on'
+    notification_body = f'New post "{post.title}" published.\n'
+    notification_body += f'\n\n{post.preview()}\n'
+    notification_body += f'\n\n Follow link: {post_url}'
+    print(notification_subject)
+    print(notification_body)
+
  
 
 class PostList(ListView):

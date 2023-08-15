@@ -8,61 +8,8 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
 
 from .models import Post, Category
-from django.conf import settings
 from .filters import PostFilter
 from .forms import PostForm
-
-import os
-from django.core.mail import send_mail
-from django.db.models.signals import post_save, m2m_changed
-from django.dispatch import receiver
-from dotenv import load_dotenv
-load_dotenv()
-
-
-@receiver(m2m_changed, sender=Post.category.through)
-def new_post_notification(sender, instance, **kwargs):
-    
-    post_id = instance.id
-    post = Post.objects.get(id=post_id)
-    post_type = post.type
-
-    if post_type == 'A':
-        return              # exit function if post is not news type
-    
-    categories = post.category.all()
-
-    # if created:
-    #     print(created, post_id)
-    categories = post.category.all()
-    print(categories)
-    for category in categories:
-        print(category)
-        subscriber_email_list = []
-        # category = Category.objects.get(id=category_id['category__id'])
-        subscribers = category.subscriber.all()
-        print(subscribers)
-        for subscriber in subscribers:
-            print(subscriber)
-            subscriber_email_list.append(subscriber.email)
-        
-        send_notification(subscriber_email_list=subscriber_email_list, post=post)           
-
-
-def send_notification(subscriber_email_list, post):
-    
-    notification_subject = f'New post added in {post.category} you subscribed on'
-    notification_body = f'New post "{post.title}" published.\n'
-    notification_body += f'\n\n{post.preview()}\n'
-    notification_body += f'\n\n Follow link: {post.get_absolute_url()}'
-    print(notification_subject)
-    print(notification_body)
-
-    send_mail(notification_subject, 
-              notification_body,
-              os.getenv('DEFAULT_EMAIL'),
-              subscriber_email_list,
-              fail_silently=False)
 
  
 

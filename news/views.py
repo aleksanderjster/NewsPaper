@@ -225,14 +225,7 @@ def subscribe_to_category(request, *args, **kwargs):
     user = request.user
     category = kwargs['category']
     refferer = request.headers['Referer']
-    # print(f'category: {category}')
-    # print(user.username)
-    # print(f'redirect to: {refferer}')
-
-    # TODO:
-    # (1) check if user subscribed on this category
-    # if no then subscribe him/her
-    # if user selected for all then (1)
+ 
     if category != 0:
         is_not_subscribed = not Category.objects.filter(id=category, subscriber=user).exists()
         if is_not_subscribed:

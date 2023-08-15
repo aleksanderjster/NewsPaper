@@ -41,10 +41,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # connect to flatpages
+    'news.apps.NewsConfig',
     'django.contrib.sites',
     'django.contrib.flatpages',
     # connect to news portal
-    'news',
+    # 'news',
     'django_filters',
     #
     #
@@ -58,6 +59,7 @@ INSTALLED_APPS = [
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_EMAIL')
 
 SITE_ID = 1
+SITE_URL = 'http://127.0.0.1:8000'
 
 LOGIN_URL = "/accounts/login/"   # адрес для перенаправления на страницу входа в систему
 LOGIN_REDIRECT_URL = '/news/'   # адрес перенаправления после успешного входа

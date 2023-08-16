@@ -55,11 +55,42 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',   # регистрации через Google-аккаунт. ClientID and SecretKey on admin page.
+
+    # implementation of django-APScheduler
+    "django_apscheduler",
 ]
+
+# Format string for displaying run time timestamps in the Django admin site. The default
+# just adds seconds to the standard Django format, which is useful for displaying the timestamps
+# for jobs that are scheduled to run on intervals of less than one minute.
+# 
+# See https://docs.djangoproject.com/en/dev/ref/settings/#datetime-format for format string
+# syntax details.
+# [
+#     "%Y-%m-%d %H:%M:%S",  # '2006-10-25 14:30:59'
+#     "%Y-%m-%d %H:%M:%S.%f",  # '2006-10-25 14:30:59.000200'
+#     "%Y-%m-%d %H:%M",  # '2006-10-25 14:30'
+#     "%m/%d/%Y %H:%M:%S",  # '10/25/2006 14:30:59'
+#     "%m/%d/%Y %H:%M:%S.%f",  # '10/25/2006 14:30:59.000200'
+#     "%m/%d/%Y %H:%M",  # '10/25/2006 14:30'
+#     "%m/%d/%y %H:%M:%S",  # '10/25/06 14:30:59'
+#     "%m/%d/%y %H:%M:%S.%f",  # '10/25/06 14:30:59.000200'
+#     "%m/%d/%y %H:%M",  # '10/25/06 14:30'
+# ]
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+
+# Maximum run time allowed for jobs that are triggered manually via the Django admin site, which
+# prevents admin site HTTP requests from timing out.
+# 
+# Longer running jobs should probably be handed over to a background task processing library
+# that supports multiple background worker processes instead (e.g. Dramatiq, Celery, Django-RQ,
+# etc. See: https://djangopackages.org/grids/g/workers-queues-tasks/ for popular options).
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_EMAIL')
 
 SITE_ID = 1
-SITE_URL = 'http://127.0.0.1:8000'
+SITE_URL = 'http://127.0.0.1:8000'  # required for send_mail link composing
 
 LOGIN_URL = "/accounts/login/"   # адрес для перенаправления на страницу входа в систему
 LOGIN_REDIRECT_URL = '/news/'   # адрес перенаправления после успешного входа

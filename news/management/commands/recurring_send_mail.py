@@ -11,6 +11,9 @@ from django_apscheduler import util
 
 from datetime import datetime, timedelta
 from news.models import Post, Category
+from django.core.mail import send_mail
+import os
+
 
 logger = logging.getLogger(__name__)
 
@@ -32,24 +35,39 @@ def weekly_news_notification():
 
     for category in Category.objects.all():
         category_subscribers = category.subscriber.all()
+
+        if len(category_subscribers) == 0: # skip on category which has no subscribers
+           continue
+        
         category_subscriber_emails = []
         email_body = ''
         for subscriber in category_subscribers:
             category_subscriber_emails.append(subscriber.email)
             
         # 3. find all news for this category in news_list
-        category_news_set = news_within_range.filter(category=category)
-        email_body = 'List of news for passed week in {category} category:\n\n'
+        category_news_set = news_within_range.filter(category=category).order_by("publication_date")
+
+        if len(category_news_set) == 0:   # skip on category which has no news for period
+           continue
+        
+        email_subject = f'NewsPortal: News for passed week in {category.__str__()} category.'
+        email_body = '=' * 60 + f'\nList of news for passed week in {category.__str__()} category you subscribed for:\n' + '=' * 60 + '\n'
+        
         for post in category_news_set:
-           email_body += f'"{post.title}"\nLink: {settings.SITE_URL}{post.get_absolute_url()}\n\n'
+           email_body += f'Title: "{post.title}" follow link: {settings.SITE_URL}{post.get_absolute_url()}\n'
 
         # 4. send email with category_news_list to the category_subscribers
         print(email_body)
-        print(f"send to: {category_subscriber_emails}")
-    # 5. repeat (4) for each category
+        # print(f"send to: {category_subscriber_emails}")
+        send_mail(
+          email_subject, 
+          email_body,
+          os.getenv('DEFAULT_EMAIL'),
+          category_subscriber_emails,
+          fail_silently=False
+        )
+  
 
-    
-    print('recurring send mail every 30 sec')
 
 
 # The `close_old_connections` decorator ensures that database connections, that have become
@@ -77,7 +95,7 @@ class Command(BaseCommand):
 
     scheduler.add_job(
       weekly_news_notification,
-      trigger=CronTrigger(minute="*/1"),  # Every 1 minute
+      trigger=CronTrigger(day="*/7"),  # Every 1 minute
       id="weekly_news_notification",  # The `id` assigned to each job MUST be unique
       max_instances=1,
       replace_existing=True,

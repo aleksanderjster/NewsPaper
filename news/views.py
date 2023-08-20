@@ -11,6 +11,20 @@ from .models import Post, Category
 from .filters import PostFilter
 from .forms import PostForm
 
+from django.http import HttpResponse
+from django.views import View
+from .tasks import hello
+
+
+class IndexView(View):
+    def get(self, request):
+        hello.delay()           # imported named task from .tasks
+        return HttpResponse('Hello!')
+    
+class NewPostNotificationView(View):
+    def get(self, request):
+        hello.delay()           # imported named task from .tasks
+        return HttpResponse('Hello!')
 
  
 
@@ -243,3 +257,7 @@ def subscribe_to_category(request, *args, **kwargs):
 
 
     return redirect(refferer)
+
+
+
+

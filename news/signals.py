@@ -40,15 +40,20 @@ def m2m_changed_handler(sender, instance, action, **kwargs): # instance is the a
 
 
 def send_notification(post, category, subscriber_email_list):
-    # composing the e-mail content
-    notification_subject = f'New post added in {category} you subscribed on'
-    notification_body = f'New post "{post.title}" published.\n'
-    notification_body += f'\n\n{post.preview()}\n'
-    notification_body += f'\n Follow link: {settings.SITE_URL}{post.get_absolute_url()}'
+    import time
+    print('INFO: start sending notifications')
+    time.sleep(60)
+    print('INFO:  notifications are sent')
+    
+    # # composing the e-mail content
+    # notification_subject = f'New post added in {category} you subscribed on'
+    # notification_body = f'New post "{post.title}" published.\n'
+    # notification_body += f'\n\n{post.preview()}\n'
+    # notification_body += f'\n Follow link: {settings.SITE_URL}{post.get_absolute_url()}'
 
-    # sending mail
-    send_mail(notification_subject, 
-              notification_body,
-              os.getenv('DEFAULT_EMAIL'),
-              subscriber_email_list,
-              fail_silently=False)
+    # # sending mail
+    # send_mail(notification_subject, 
+    #           notification_body,
+    #           os.getenv('DEFAULT_EMAIL'),
+    #           subscriber_email_list,
+    #           fail_silently=False)

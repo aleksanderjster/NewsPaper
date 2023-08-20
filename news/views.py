@@ -12,19 +12,21 @@ from .filters import PostFilter
 from .forms import PostForm
 
 from django.http import HttpResponse
-from django.views import View
-from .tasks import hello
+# from django.views import View
+# from .tasks import hello , NewPostNotificationTask
 
 
-class IndexView(View):
-    def get(self, request):
-        hello.delay()           # imported named task from .tasks
-        return HttpResponse('Hello!')
+# class IndexView(View):
+#     def get(self, request):
+#          # call imported 'hello'task from .tasks
+#          # .delay() or .apply_async(*args, **kwargs) calls celery
+#         hello.delay()
+#         return HttpResponse('Hello!')
     
-class NewPostNotificationView(View):
-    def get(self, request):
-        hello.delay()           # imported named task from .tasks
-        return HttpResponse('Hello!')
+# class NewPostNotificationView(View):
+#     def get(self, request):
+#         hello.delay()           # imported named task from .tasks
+#         return HttpResponse('Hello!')
 
  
 

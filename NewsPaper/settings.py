@@ -60,6 +60,15 @@ INSTALLED_APPS = [
     "django_apscheduler",
 ]
 
+# D11 - cache module
+# cache setting for filebased type stored in project folder 'cache_files'
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, "cache_files"),
+        }
+}
+
 
 # redis configuration data
 # CELERY_BROKER_URL = 'redis://localhost:6379'

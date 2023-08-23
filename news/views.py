@@ -226,6 +226,12 @@ class PostDelete(PermissionRequiredMixin, DeleteView):
         return super().get_success_url()
 
 
+# # D11(example) cache the page defined by view function
+# otherwise, for generics, look into urls.py them.
+#  
+# from django.views.decorators.cache import cache_page
+
+# @cache_page(60 * 1) # cache the page: upgrade_me for 60*1 seconds
 @login_required
 def upgrade_me(request, *args, **kwargs):
     user = request.user
@@ -237,6 +243,7 @@ def upgrade_me(request, *args, **kwargs):
     
     return redirect(refferer)
 
+    
 @login_required
 def subscribe_to_category(request, *args, **kwargs):
     user = request.user

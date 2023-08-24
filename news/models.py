@@ -1,8 +1,12 @@
+from typing import Iterable, Optional
 from django.db import models
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.db.models import Max, Sum
 from django.urls import reverse
+
+# D11 cache
+from django.core.cache import cache
 
 # Create your models here.
 # variables for categories
@@ -173,6 +177,12 @@ class Post(models.Model):
         
         if self.type == "A":
             return reverse("article_detail", kwargs={"pk": self.pk}) # redirect to articles/<int:pk>
+        
+    # cache
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        cache.delete(f'post-{self.pk}')
+        # print(f"LOG: Post id={self.pk} deleted from cache.")
     
 
 # model for releasing ManyToMany relation between

@@ -12,6 +12,11 @@ from .filters import PostFilter
 from .forms import PostForm
 
 from django.http import HttpResponse
+
+# D11 cache
+from django.core.cache import cache
+
+
 # from django.views import View
 # from .tasks import hello , NewPostNotificationTask
 
@@ -133,6 +138,18 @@ class PostDetail(DetailView):
         list_view_url = reverse('your_model_list') + f'?page={current_page_number}'
         print(list_view_url)
         return list_view_url
+    
+    # read obj from cache if exist and otherwise put obj in cache 
+    def get_object(self, *args, **kwargs):
+        post = cache.get(f'post-{self.kwargs["pk"]}', None)
+
+        if not post:
+            # print("LOG: Post not in cache. Read it from db. ")
+            post = super().get_object(queryset=self.queryset)
+            cache.set(f"post-{self.kwargs['pk']}", post)
+            # print(f"LOG: Post id={self.kwargs['pk']} placed in cache")
+        
+        return post
 
 
 class PostCreate(PermissionRequiredMixin, CreateView):
